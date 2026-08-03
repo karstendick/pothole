@@ -1,0 +1,325 @@
+[gd_scene load_steps=35 format=3]
+
+[ext_resource type="Script" path="res://scripts/follow_camera.gd" id="1_camera"]
+[ext_resource type="Shader" path="res://shaders/ground.gdshader" id="2_ground"]
+[ext_resource type="PackedScene" path="res://scenes/hole.tscn" id="3_hole"]
+[ext_resource type="Script" path="res://scripts/swallowable.gd" id="4_swallowable"]
+[ext_resource type="Script" path="res://scripts/hud.gd" id="5_hud"]
+
+[sub_resource type="ProceduralSkyMaterial" id="sky_material"]
+sky_top_color = Color(0.35, 0.53, 0.78, 1)
+sky_horizon_color = Color(0.76, 0.83, 0.87, 1)
+ground_horizon_color = Color(0.76, 0.83, 0.87, 1)
+ground_bottom_color = Color(0.6, 0.67, 0.7, 1)
+
+[sub_resource type="Sky" id="sky"]
+sky_material = SubResource("sky_material")
+
+[sub_resource type="Environment" id="environment"]
+background_mode = 2
+sky = SubResource("sky")
+ambient_light_source = 3
+ambient_light_color = Color(0.5, 0.54, 0.6, 1)
+ambient_light_sky_contribution = 0.0
+ambient_light_energy = 0.22
+reflected_light_source = 2
+tonemap_mode = 2
+
+[sub_resource type="ShaderMaterial" id="mat_ground"]
+shader = ExtResource("2_ground")
+
+[sub_resource type="PlaneMesh" id="mesh_ground"]
+material = SubResource("mat_ground")
+size = Vector2(60, 60)
+
+[sub_resource type="BoxShape3D" id="shape_ground"]
+size = Vector3(60, 1, 60)
+
+[sub_resource type="StandardMaterial3D" id="mat_red"]
+albedo_color = Color(0.85, 0.31, 0.29, 1)
+roughness = 0.85
+
+[sub_resource type="StandardMaterial3D" id="mat_blue"]
+albedo_color = Color(0.27, 0.47, 0.79, 1)
+roughness = 0.85
+
+[sub_resource type="StandardMaterial3D" id="mat_yellow"]
+albedo_color = Color(0.93, 0.74, 0.24, 1)
+roughness = 0.85
+
+[sub_resource type="StandardMaterial3D" id="mat_green"]
+albedo_color = Color(0.35, 0.68, 0.4, 1)
+roughness = 0.85
+
+[sub_resource type="StandardMaterial3D" id="mat_purple"]
+albedo_color = Color(0.6, 0.4, 0.78, 1)
+roughness = 0.85
+
+[sub_resource type="SphereMesh" id="mesh_sphere_small"]
+radius = 0.35
+height = 0.7
+
+[sub_resource type="SphereShape3D" id="shape_sphere_small"]
+radius = 0.35
+
+[sub_resource type="SphereMesh" id="mesh_sphere_medium"]
+radius = 0.7
+height = 1.4
+
+[sub_resource type="SphereShape3D" id="shape_sphere_medium"]
+radius = 0.7
+
+[sub_resource type="SphereMesh" id="mesh_sphere_large"]
+radius = 1.3
+height = 2.6
+
+[sub_resource type="SphereShape3D" id="shape_sphere_large"]
+radius = 1.3
+
+[sub_resource type="BoxMesh" id="mesh_cube_small"]
+size = Vector3(0.6, 0.6, 0.6)
+
+[sub_resource type="BoxShape3D" id="shape_cube_small"]
+size = Vector3(0.6, 0.6, 0.6)
+
+[sub_resource type="BoxMesh" id="mesh_cube_medium"]
+size = Vector3(1.2, 1.2, 1.2)
+
+[sub_resource type="BoxShape3D" id="shape_cube_medium"]
+size = Vector3(1.2, 1.2, 1.2)
+
+[sub_resource type="BoxMesh" id="mesh_plank"]
+size = Vector3(2, 0.4, 0.8)
+
+[sub_resource type="BoxShape3D" id="shape_plank"]
+size = Vector3(2, 0.4, 0.8)
+
+[sub_resource type="BoxMesh" id="mesh_pillar"]
+size = Vector3(0.7, 2.4, 0.7)
+
+[sub_resource type="BoxShape3D" id="shape_pillar"]
+size = Vector3(0.7, 2.4, 0.7)
+
+[sub_resource type="BoxMesh" id="mesh_slab"]
+size = Vector3(2.6, 1, 2.2)
+
+[sub_resource type="BoxShape3D" id="shape_slab"]
+size = Vector3(2.6, 1, 2.2)
+
+[sub_resource type="BoxMesh" id="mesh_block"]
+size = Vector3(3.6, 1.6, 3)
+
+[sub_resource type="BoxShape3D" id="shape_block"]
+size = Vector3(3.6, 1.6, 3)
+
+[node name="Main" type="Node3D"]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("environment")
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.81915206, 0.46984634, -0.32898995, 0, 0.57357645, 0.81915206, 0.57357645, -0.6710101, 0.46984634, 0, 12, 0)
+light_energy = 0.95
+shadow_enabled = true
+
+[node name="Ground" type="StaticBody3D" parent="."]
+
+[node name="Mesh" type="MeshInstance3D" parent="Ground"]
+mesh = SubResource("mesh_ground")
+
+[node name="Collision" type="CollisionShape3D" parent="Ground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
+shape = SubResource("shape_ground")
+
+[node name="Hole" parent="." instance=ExtResource("3_hole")]
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.65606, 0.75471, 0, -0.75471, 0.65606, 0, 11.5, 10)
+script = ExtResource("1_camera")
+target_path = NodePath("../Hole")
+offset = Vector3(0, 11.5, 10)
+
+[node name="Objects" type="Node3D" parent="."]
+
+[node name="BallSmallA" type="RigidBody3D" parent="Objects"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 0.36, -2)
+script = ExtResource("4_swallowable")
+
+[node name="Mesh" type="MeshInstance3D" parent="Objects/BallSmallA"]
+mesh = SubResource("mesh_sphere_small")
+surface_material_override/0 = SubResource("mat_red")
+
+[node name="Collision" type="CollisionShape3D" parent="Objects/BallSmallA"]
+shape = SubResource("shape_sphere_small")
+
+[node name="BallSmallB" type="RigidBody3D" parent="Objects"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0.36, 3)
+script = ExtResource("4_swallowable")
+
+[node name="Mesh" type="MeshInstance3D" parent="Objects/BallSmallB"]
+mesh = SubResource("mesh_sphere_small")
+surface_material_override/0 = SubResource("mat_yellow")
+
+[node name="Collision" type="CollisionShape3D" parent="Objects/BallSmallB"]
+shape = SubResource("shape_sphere_small")
+
+[node name="CubeSmallA" type="RigidBody3D" parent="Objects"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0.31, 3)
+script = ExtResource("4_swallowable")
+
+[node name="Mesh" type="MeshInstance3D" parent="Objects/CubeSmallA"]
+mesh = SubResource("mesh_cube_small")
+surface_material_override/0 = SubResource("mat_blue")
+
+[node name="Collision" type="CollisionShape3D" parent="Objects/CubeSmallA"]
+shape = SubResource("shape_cube_small")
+
+[node name="CubeSmallB" type="RigidBody3D" parent="Objects"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.2, 0.31, -3.5)
+script = ExtResource("4_swallowable")
+
+[node name="Mesh" type="MeshInstance3D" parent="Objects/CubeSmallB"]
+mesh = SubResource("mesh_cube_small")
+surface_material_override/0 = SubResource("mat_green")
+
+[node name="Collision" type="CollisionShape3D" parent="Objects/CubeSmallB"]
+shape = SubResource("shape_cube_small")
+
+[node name="Pillar" type="RigidBody3D" parent="Objects"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 1.21, 4)
+script = ExtResource("4_swallowable")
+
+[node name="Mesh" type="MeshInstance3D" parent="Objects/Pillar"]
+mesh = SubResource("mesh_pillar")
+surface_material_override/0 = SubResource("mat_purple")
+
+[node name="Collision" type="CollisionShape3D" parent="Objects/Pillar"]
+shape = SubResource("shape_pillar")
+
+[node name="CubeMediumA" type="RigidBody3D" parent="Objects"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0.61, -2)
+script = ExtResource("4_swallowable")
+
+[node name="Mesh" type="MeshInstance3D" parent="Objects/CubeMediumA"]
+mesh = SubResource("mesh_cube_medium")
+surface_material_override/0 = SubResource("mat_red")
+
+[node name="Collision" type="CollisionShape3D" parent="Objects/CubeMediumA"]
+shape = SubResource("shape_cube_medium")
+
+[node name="CubeMediumB" type="RigidBody3D" parent="Objects"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7, 0.61, -5)
+script = ExtResource("4_swallowable")
+
+[node name="Mesh" type="MeshInstance3D" parent="Objects/CubeMediumB"]
+mesh = SubResource("mesh_cube_medium")
+surface_material_override/0 = SubResource("mat_blue")
+
+[node name="Collision" type="CollisionShape3D" parent="Objects/CubeMediumB"]
+shape = SubResource("shape_cube_medium")
+
+[node name="BallMedium" type="RigidBody3D" parent="Objects"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.5, 0.71, 5.5)
+script = ExtResource("4_swallowable")
+
+[node name="Mesh" type="MeshInstance3D" parent="Objects/BallMedium"]
+mesh = SubResource("mesh_sphere_medium")
+surface_material_override/0 = SubResource("mat_yellow")
+
+[node name="Collision" type="CollisionShape3D" parent="Objects/BallMedium"]
+shape = SubResource("shape_sphere_medium")
+
+[node name="PlankA" type="RigidBody3D" parent="Objects"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.21, 7)
+script = ExtResource("4_swallowable")
+
+[node name="Mesh" type="MeshInstance3D" parent="Objects/PlankA"]
+mesh = SubResource("mesh_plank")
+surface_material_override/0 = SubResource("mat_green")
+
+[node name="Collision" type="CollisionShape3D" parent="Objects/PlankA"]
+shape = SubResource("shape_plank")
+
+[node name="PlankB" type="RigidBody3D" parent="Objects"]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -9, 0.21, -6)
+script = ExtResource("4_swallowable")
+
+[node name="Mesh" type="MeshInstance3D" parent="Objects/PlankB"]
+mesh = SubResource("mesh_plank")
+surface_material_override/0 = SubResource("mat_purple")
+
+[node name="Collision" type="CollisionShape3D" parent="Objects/PlankB"]
+shape = SubResource("shape_plank")
+
+[node name="BallLarge" type="RigidBody3D" parent="Objects"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.5, 1.31, 6)
+script = ExtResource("4_swallowable")
+
+[node name="Mesh" type="MeshInstance3D" parent="Objects/BallLarge"]
+mesh = SubResource("mesh_sphere_large")
+surface_material_override/0 = SubResource("mat_red")
+
+[node name="Collision" type="CollisionShape3D" parent="Objects/BallLarge"]
+shape = SubResource("shape_sphere_large")
+
+[node name="SlabA" type="RigidBody3D" parent="Objects"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11, 0.51, 2)
+script = ExtResource("4_swallowable")
+
+[node name="Mesh" type="MeshInstance3D" parent="Objects/SlabA"]
+mesh = SubResource("mesh_slab")
+surface_material_override/0 = SubResource("mat_blue")
+
+[node name="Collision" type="CollisionShape3D" parent="Objects/SlabA"]
+shape = SubResource("shape_slab")
+
+[node name="SlabB" type="RigidBody3D" parent="Objects"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11, 0.51, -9)
+script = ExtResource("4_swallowable")
+
+[node name="Mesh" type="MeshInstance3D" parent="Objects/SlabB"]
+mesh = SubResource("mesh_slab")
+surface_material_override/0 = SubResource("mat_yellow")
+
+[node name="Collision" type="CollisionShape3D" parent="Objects/SlabB"]
+shape = SubResource("shape_slab")
+
+[node name="BlockA" type="RigidBody3D" parent="Objects"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 0.81, -12)
+script = ExtResource("4_swallowable")
+
+[node name="Mesh" type="MeshInstance3D" parent="Objects/BlockA"]
+mesh = SubResource("mesh_block")
+surface_material_override/0 = SubResource("mat_green")
+
+[node name="Collision" type="CollisionShape3D" parent="Objects/BlockA"]
+shape = SubResource("shape_block")
+
+[node name="BlockB" type="RigidBody3D" parent="Objects"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13, 0.81, 11)
+script = ExtResource("4_swallowable")
+
+[node name="Mesh" type="MeshInstance3D" parent="Objects/BlockB"]
+mesh = SubResource("mesh_block")
+surface_material_override/0 = SubResource("mat_purple")
+
+[node name="Collision" type="CollisionShape3D" parent="Objects/BlockB"]
+shape = SubResource("shape_block")
+
+[node name="HUD" type="CanvasLayer" parent="."]
+
+[node name="Label" type="Label" parent="HUD"]
+offset_left = 24.0
+offset_top = 20.0
+offset_right = 400.0
+offset_bottom = 140.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 0.65)
+theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 20
+text = "Hole size: 0.80
+Swallowed: 0
+
+WASD / arrow keys to move"
+script = ExtResource("5_hud")
+hole_path = NodePath("../../Hole")
